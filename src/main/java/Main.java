@@ -28,7 +28,7 @@ public class Main extends PApplet {
         this.function = (x) -> (2 * x + 5);
 
         new FunctionDrawer(this, function);
-        neuralNetwork = new NeuralNetwork(new int[]{2, 4, 2});
+        neuralNetwork = new NeuralNetwork(new int[]{2, 1});
 
         for (int i = 0; i < 200; i++) {
             points.add(new Point(this, function));
@@ -48,17 +48,13 @@ public class Main extends PApplet {
 
                 try {
                     double[][] output = neuralNetwork.getOutput(input);
-                    if (output[0][0] > output[1][0]) {
-                        point.setAbove(true);
-                    }
+                    point.setAbove(output[0][0] > 0.5);
 
-                    double[][] expectedOutput = new double[2][1];
+                    double[][] expectedOutput = new double[1][1];
                     if (point.isRealAbove()) {
                         expectedOutput[0][0] = 1.0;
-                        expectedOutput[1][0] = 0.0;
                     } else {
                         expectedOutput[0][0] = 0.0;
-                        expectedOutput[1][0] = 1.0;
                     }
 
                     neuralNetwork.backPropagation(output, expectedOutput);
@@ -69,7 +65,7 @@ public class Main extends PApplet {
             }
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -87,7 +83,7 @@ public class Main extends PApplet {
             try {
                 double[][] output = neuralNetwork.getOutput(input);
 
-                point.setAbove(output[0][0] > output[1][0]);
+                point.setAbove(output[0][0] > 0.5);
 
             } catch (InvalidInputException e) {
                 e.printStackTrace();

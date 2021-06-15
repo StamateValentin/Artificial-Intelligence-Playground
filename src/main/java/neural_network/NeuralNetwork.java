@@ -3,8 +3,6 @@ package neural_network;
 import exceptions.InvalidInputException;
 import matrix.Matrix;
 
-import java.util.Arrays;
-
 /* TODO: BIAS */
 public class NeuralNetwork {
     private final double learningRate = 0.05;
@@ -36,16 +34,19 @@ public class NeuralNetwork {
         double[][] currentOutput = output;
         double[][] currentError = Matrix.subtract(expected, output);
 
-        for (int i = brain.length - 1; i >= 0; i--) {
+        System.out.println("Iteration");
 
+        for (int i = brain.length - 1; i >= 0; i--) {
             final double[][] layer = brain[i];
             final double[][] layerTranspose = Matrix.transpose(layer);
 
             final double[][] previousError = Matrix.multiply(layerTranspose, currentError);
             final double[][] previousOutput = Matrix.multiply(layerTranspose, currentOutput);
 
+            Matrix.print(layer);
+
             /* FIST BIT */
-            double[][] errorSigmoid = Arrays.copyOf(currentError, currentError.length);
+            double[][] errorSigmoid = Matrix.copyOf(currentError);
 
             for (int k = 0; k < errorSigmoid.length; k++) {
                 errorSigmoid[k][0] *= - derivativeActivationFunction(currentOutput[k][0]);
@@ -53,6 +54,8 @@ public class NeuralNetwork {
 
             /* SECOND BIT */
             final double[][] slopeMatrix = Matrix.multiply(errorSigmoid, Matrix.transpose(previousOutput));
+
+            Matrix.print(slopeMatrix);
 
             /* UPDATE THE WEIGHTS */
             for (int k = 0; k < layer.length; k++) {
@@ -76,7 +79,6 @@ public class NeuralNetwork {
 
     /* SIGMOID ACTIVATION FUNCTION */
     public static double activationFunction(double x) {
-        x = NeuralNetworkUtil.normalizeX(x);
         return 1.0D / (1 + Math.pow(Math.E, -x));
     }
 

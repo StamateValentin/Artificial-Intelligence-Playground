@@ -60,4 +60,16 @@ public class Matrix {
         System.out.println("");
     }
 
+    public static double[][] copyOf(double[][] A) {
+        double[][] copy = new double[A.length][A[0].length];
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[0].length; j++) {
+                copy[i][j] = A[i][j];
+            }
+        }
+
+        return copy;
+    }
+
 }
