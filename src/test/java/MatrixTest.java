@@ -67,7 +67,7 @@ public class MatrixTest {
                 {0, 0}
         };
 
-        double[][] result = Matrix.difference(A, B);
+        double[][] result = Matrix.subtract(A, B);
 
         Assertions.assertArrayEquals(expected, result);
     }

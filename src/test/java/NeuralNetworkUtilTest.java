@@ -20,4 +20,10 @@ public class NeuralNetworkUtilTest {
         Matrix.print(result);
     }
 
+    @Test
+    public void normalizeX() {
+        System.out.println(NeuralNetworkUtil.normalizeX(0.6));
+    }
+
+
 }

@@ -24,4 +24,8 @@ public class NeuralNetworkUtil {
         return matrix;
     }
 
+    public static double normalizeX(double x) {
+        return 0.01 + ((0.99 - 0.01) / 1.0) *  x;
+    }
+
 }

@@ -35,7 +35,7 @@ public class Matrix {
         return output;
     }
 
-    public static double[][] difference(final double[][] A, final double[][] B) {
+    public static double[][] subtract(final double[][] A, final double[][] B) {
         int n = A.length;
         int m = A[0].length;
 

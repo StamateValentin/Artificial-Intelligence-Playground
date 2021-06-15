@@ -87,8 +87,6 @@ public class Main extends PApplet {
             try {
                 double[][] output = neuralNetwork.getOutput(input);
 
-                System.out.println(Arrays.deepToString(output));
-
                 point.setAbove(output[0][0] > output[1][0]);
 
             } catch (InvalidInputException e) {

@@ -34,7 +34,7 @@ public class NeuralNetwork {
 
     public void backPropagation(double[][] output, double[][] expected) {
         double[][] currentOutput = output;
-        double[][] currentError = Matrix.difference(expected, output);
+        double[][] currentError = Matrix.subtract(expected, output);
 
         for (int i = brain.length - 1; i >= 0; i--) {
 
@@ -76,6 +76,7 @@ public class NeuralNetwork {
 
     /* SIGMOID ACTIVATION FUNCTION */
     public static double activationFunction(double x) {
+        x = NeuralNetworkUtil.normalizeX(x);
         return 1.0D / (1 + Math.pow(Math.E, -x));
     }
 
