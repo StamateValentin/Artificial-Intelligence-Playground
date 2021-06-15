@@ -1,6 +1,0 @@
-neural_network/NeuralNetworkTest.java
- neural_network.NeuralNetworkTest
-MatrixTest.java
- MatrixTest
-NeuralNetworkUtilTest.java
- NeuralNetworkUtilTest
