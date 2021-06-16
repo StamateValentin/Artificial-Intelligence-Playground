@@ -3,9 +3,7 @@ import function.Function;
 import function.FunctionDrawer;
 import neural_network.NeuralNetwork;
 import processing.core.PApplet;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main extends PApplet {
@@ -41,31 +39,36 @@ public class Main extends PApplet {
 
     private void train() {
         while (true) {
-            for (Point point : points) {
+
+            int n = points.size();
+
+            double[][][] inputs = new double[n][][];
+            double[][][] expectedOutputs = new double[n][][];
+
+            for (int i = 0; i < n; i++) {
+                Point point = points.get(i);
+
                 double[][] input = new double[2][1];
                 input[0][0] = normalizeX(point.getX());
                 input[1][0] = normalizeY(point.getY());
 
-                try {
-                    double[][] output = neuralNetwork.getOutput(input);
-                    point.setAbove(output[0][0] > 0.5);
+                double[][] expectedOutput = new double[1][1];
+                expectedOutput[0][0] = point.isRealAbove() ? 1.0 : 0.0;
 
-                    double[][] expectedOutput = new double[1][1];
-                    if (point.isRealAbove()) {
-                        expectedOutput[0][0] = 1.0;
-                    } else {
-                        expectedOutput[0][0] = 0.0;
-                    }
-
-                    neuralNetwork.backPropagation(output, expectedOutput);
-                } catch (InvalidInputException e) {
-                    e.printStackTrace();
-                }
-
+                inputs[i] = input;
+                expectedOutputs[i] = expectedOutput;
             }
 
             try {
-                Thread.sleep(100);
+                neuralNetwork.trainIteration(inputs, expectedOutputs);
+            } catch (InvalidInputException e) {
+                e.printStackTrace();
+            }
+
+            System.out.printf("%.4f\n", neuralNetwork.getCost());
+
+            try {
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

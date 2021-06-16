@@ -72,4 +72,28 @@ public class Matrix {
         return copy;
     }
 
+    public static boolean equalWith(double[][] A, double[][] B) {
+        if (A.length != B.length || A[0].length != B[0].length) {
+            return false;
+        }
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[0].length; j++) {
+                if (A[i][j] != B[i][j]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static void applyTransformation(double[][] A, Transform transform) {
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[0].length; j++) {
+                A[i][j] = transform.applyFunction(A[i][j]);
+            }
+        }
+    }
+
 }

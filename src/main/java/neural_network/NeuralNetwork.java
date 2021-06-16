@@ -5,9 +5,10 @@ import matrix.Matrix;
 
 /* TODO: BIAS */
 public class NeuralNetwork {
-    private final double learningRate = 0.05;
+    private final double learningRate = 0.01;
 
     private final double[][][] brain;
+    private double cost = 0;
 
     public NeuralNetwork(int[] layerDimension) {
         this.brain = new double[layerDimension.length - 1][][];
@@ -24,26 +25,25 @@ public class NeuralNetwork {
 
         for (int i = 0; i < brain.length; i++) {
             currentInput = Matrix.multiply(brain[i], currentInput);
-            normalizeMatrix(currentInput);
+            applyActivationFunction(currentInput);
         }
 
         return currentInput;
     }
 
-    public void backPropagation(double[][] output, double[][] expected) {
-        double[][] currentOutput = output;
-        double[][] currentError = Matrix.subtract(expected, output);
+    public void backPropagation(double[][] input, double[][] expected) {
+        double[][][] outputs = getOutputs(input);
 
-        System.out.println("Iteration");
+        double[][] currentOutput = outputs[outputs.length - 1];
+        double[][] currentError = Matrix.subtract(expected, currentOutput);
 
         for (int i = brain.length - 1; i >= 0; i--) {
             final double[][] layer = brain[i];
+            final double[][] previousOutput = outputs[i];
+
             final double[][] layerTranspose = Matrix.transpose(layer);
 
             final double[][] previousError = Matrix.multiply(layerTranspose, currentError);
-            final double[][] previousOutput = Matrix.multiply(layerTranspose, currentOutput);
-
-            Matrix.print(layer);
 
             /* FIST BIT */
             double[][] errorSigmoid = Matrix.copyOf(currentError);
@@ -54,8 +54,6 @@ public class NeuralNetwork {
 
             /* SECOND BIT */
             final double[][] slopeMatrix = Matrix.multiply(errorSigmoid, Matrix.transpose(previousOutput));
-
-            Matrix.print(slopeMatrix);
 
             /* UPDATE THE WEIGHTS */
             for (int k = 0; k < layer.length; k++) {
@@ -69,12 +67,52 @@ public class NeuralNetwork {
         }
     }
 
-    private void normalizeMatrix(double[][] A) {
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < A[0].length; j++) {
-                A[i][j] = activationFunction(A[i][j]);
-            }
+    private double[][][] getOutputs(final double[][] input) {
+        int n = brain.length;
+        double[][][] outputs = new double[n + 1][][];
+
+        outputs[0] = Matrix.copyOf(input);
+        for (int i = 1; i <= n; i++) {
+            double[][] layer = brain[i - 1];
+            double[][] currentInput = outputs[i - 1];
+
+            outputs[i] = Matrix.multiply(layer, currentInput);
+
+            applyActivationFunction(outputs[i]);
         }
+
+        return outputs;
+    }
+
+    public void trainIteration(double[][][] inputs, double[][][] expectedOutputs) throws InvalidInputException {
+        int n = inputs.length;
+        double cost = 0;
+
+        for (int i = 0; i < n; i++) {
+            double[][] input = inputs[i];
+            double[][] expectedOutput = expectedOutputs[i];
+
+            backPropagation(input, expectedOutput);
+
+            double[][] output = getOutput(input);
+            cost += getOutputCost(output, expectedOutput);
+        }
+
+        this.cost = cost;
+    }
+
+    private double getOutputCost(double[][] output, double[][] expectedOutput) {
+        double sum = 0;
+        int n = output.length;
+        for (int i = 0; i < n; i++) {
+            sum += Math.pow(expectedOutput[i][0] - output[i][0], 2);
+        }
+
+        return sum / n;
+    }
+
+    private void applyActivationFunction(double[][] A) {
+        Matrix.applyTransformation(A, NeuralNetwork::activationFunction);
     }
 
     /* SIGMOID ACTIVATION FUNCTION */
@@ -85,6 +123,11 @@ public class NeuralNetwork {
     public static double derivativeActivationFunction(double x) {
         double y = activationFunction(x);
         return y * (1 - y);
+    }
+
+    /* GETTERS AND SETTERS */
+    public double getCost() {
+        return cost;
     }
 
 }
