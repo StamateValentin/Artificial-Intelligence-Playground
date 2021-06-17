@@ -53,7 +53,13 @@ public class Matrix {
     public static void print(double[][] A) {
         for (int i = 0; i < A.length; i++) {
             for (int j = 0; j < A[0].length; j++) {
+                if (j == 0) {
+                    System.out.print("|");
+                }
                 System.out.printf("%7.3f ", A[i][j]);
+                if (j == A[0].length - 1) {
+                    System.out.print("|");
+                }
             }
             System.out.println("");
         }

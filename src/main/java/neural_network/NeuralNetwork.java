@@ -42,7 +42,6 @@ public class NeuralNetwork {
             final double[][] previousOutput = outputs[i];
 
             final double[][] layerTranspose = Matrix.transpose(layer);
-
             final double[][] previousError = Matrix.multiply(layerTranspose, currentError);
 
             /* FIST BIT */
@@ -61,6 +60,67 @@ public class NeuralNetwork {
                     layer[k][l] = layer[k][l] - learningRate * slopeMatrix[k][l];
                 }
             }
+
+            currentOutput = previousOutput;
+            currentError = previousError;
+        }
+    }
+
+    public void backPropagationDebug(double[][] input, double[][] expected) {
+        System.out.println("Inside:");
+        double[][][] outputs = getOutputs(input);
+
+        double[][] currentOutput = outputs[outputs.length - 1];
+        double[][] currentError = Matrix.subtract(expected, currentOutput);
+
+        System.out.println("Inside Current Output");
+        Matrix.print(currentOutput);
+        System.out.println("Inside Current Error");
+        Matrix.print(currentError);
+
+        for (int i = brain.length - 1; i >= 0; i--) {
+            System.out.println("Iteration " + i);
+            final double[][] layer = brain[i];
+            System.out.println("Layer");
+            Matrix.print(layer);
+            final double[][] previousOutput = outputs[i];
+            System.out.println("Previous Output");
+            Matrix.print(previousOutput);
+
+            final double[][] layerTranspose = Matrix.transpose(layer);
+
+            final double[][] previousError = Matrix.multiply(layerTranspose, currentError);
+            System.out.println("Previous error");
+            Matrix.print(previousError);
+
+            /* FIST BIT */
+            double[][] errorSigmoid = Matrix.copyOf(currentError);
+
+            for (int k = 0; k < errorSigmoid.length; k++) {
+                errorSigmoid[k][0] *= - derivativeActivationFunction(currentOutput[k][0]);
+            }
+
+            System.out.println("Error sigmoid");
+            Matrix.print(errorSigmoid);
+
+            /* SECOND BIT */
+            final double[][] slopeMatrix = Matrix.multiply(errorSigmoid, Matrix.transpose(previousOutput));
+
+            System.out.println("Slope matrix");
+            Matrix.print(slopeMatrix);
+
+            /* UPDATE THE WEIGHTS */
+            for (int k = 0; k < layer.length; k++) {
+                for (int l = 0; l < layer[0].length; l++) {
+                    System.out.println("Initial:" + layer[k][l]);
+                    System.out.println("Value: " + learningRate * slopeMatrix[k][l]);
+                    layer[k][l] = layer[k][l] - learningRate * slopeMatrix[k][l];
+                    System.out.println("After: " + layer[k][l]);
+                }
+            }
+
+            System.out.println("After update");
+            Matrix.print(layer);
 
             currentOutput = previousOutput;
             currentError = previousError;
@@ -89,7 +149,7 @@ public class NeuralNetwork {
         double cost = 0;
 
         for (int i = 0; i < n; i++) {
-            double[][] input = inputs[i];
+            double[][] input = Matrix.copyOf(inputs[i]);
             double[][] expectedOutput = expectedOutputs[i];
 
             backPropagation(input, expectedOutput);

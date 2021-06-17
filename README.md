@@ -5,4 +5,6 @@
 * [The Coding Train : Neural Network Playlist](https://youtube.com/playlist?list=PLRqwX-V7Uu6aCibgK1PTWWu9by6XFdCfh)
 * [ml4a](https://ml4a.github.io)
 * [Matrix Multiplication Online](http://matrixmultiplication.xyz)
+* [Shuffling a Vector](https://stackoverflow.com/questions/1519736/random-shuffling-of-an-array)
+
 

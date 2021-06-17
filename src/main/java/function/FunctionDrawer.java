@@ -18,14 +18,25 @@ public class FunctionDrawer {
         pApplet.pushMatrix();
         pApplet.translate(pApplet.width / 2, pApplet.height / 2);
         pApplet.rotate(PConstants.PI);
+        pApplet.scale(-1,1);
 
         for (int i = - pApplet.width / 2; i < pApplet.width / 2; i++) {
+            int y = function.f(i);
+            if (isOutsideCanvas(y)) {
+                continue;
+            }
+
             pApplet.fill(50, 102, 168);
             pApplet.noStroke();
+
             pApplet.ellipse(i, function.f(i), 2, 2);
         }
 
         pApplet.popMatrix();
+    }
+
+    private boolean isOutsideCanvas(int y) {
+        return y < - pApplet.height / 2 || y > pApplet.height / 2;
     }
 
 }

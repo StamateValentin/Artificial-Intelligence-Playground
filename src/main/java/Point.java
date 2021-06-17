@@ -5,8 +5,8 @@ import processing.core.PConstants;
 public class Point {
     private final PApplet pApplet;
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     private final int colorA;
     private final int colorB;
@@ -35,6 +35,7 @@ public class Point {
         pApplet.pushMatrix();
         pApplet.translate(pApplet.width / 2, pApplet.height / 2);
         pApplet.rotate(PConstants.PI);
+        pApplet.scale(-1,1);
 
         int color = isAbove ? colorA : colorB;
         int strokeColor = realAbove ? colorA : colorB;
@@ -61,5 +62,14 @@ public class Point {
 
     public int getY() {
         return y;
+    }
+
+    public boolean isAbove() {
+        return isAbove;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Point: %3d %3d", x, y);
     }
 }
