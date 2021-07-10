@@ -31,6 +31,22 @@ public class Point {
         }
     }
 
+    public Point(PApplet pApplet, Function function, int x, int y) {
+        this.pApplet = pApplet;
+        this.pApplet.registerMethod("draw", this);
+        this.colorA = pApplet.color(65, 209, 103);
+        this.colorB = pApplet.color(255, 82, 82);
+
+        this.x = x;
+        this.y = y;
+
+        int functionValue = function.f(x);
+
+        if (this.y >= functionValue) {
+            realAbove = true;
+        }
+    }
+
     public void draw() {
         pApplet.pushMatrix();
         pApplet.translate(pApplet.width / 2, pApplet.height / 2);

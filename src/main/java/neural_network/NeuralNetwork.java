@@ -1,11 +1,18 @@
 package neural_network;
 
 import exceptions.InvalidInputException;
-import matrix.Matrix;
+import neural_network.initialization.Initialization;
+import neural_network.initialization.RandomInitialization;
+import neural_network.matrix.Matrix;
+import neural_network.activation.ActivationFunction;
+import neural_network.activation.SigmoidFunction;
 
 /* TODO: BIAS */
 public class NeuralNetwork {
-    private final double learningRate = 0.01;
+    private final double learningRate = 0.07;
+
+    private ActivationFunction activationFunction = new SigmoidFunction();
+    private Initialization initialization = new RandomInitialization();
 
     private final double[][][] brain;
     private double cost = 0;
@@ -16,7 +23,7 @@ public class NeuralNetwork {
         for (int i = 0; i < brain.length; i++) {
             int n = layerDimension[i + 1];
             int m = layerDimension[i];
-            brain[i] = NeuralNetworkUtil.createRandomWeightedMatrix(n, m);
+            brain[i] = initialization.create(n, m);
         }
     }
 
@@ -48,7 +55,7 @@ public class NeuralNetwork {
             double[][] errorSigmoid = Matrix.copyOf(currentError);
 
             for (int k = 0; k < errorSigmoid.length; k++) {
-                errorSigmoid[k][0] *= - derivativeActivationFunction(currentOutput[k][0]);
+                errorSigmoid[k][0] *= - activationFunction.slope(currentOutput[k][0]);
             }
 
             /* SECOND BIT */
@@ -97,7 +104,7 @@ public class NeuralNetwork {
             double[][] errorSigmoid = Matrix.copyOf(currentError);
 
             for (int k = 0; k < errorSigmoid.length; k++) {
-                errorSigmoid[k][0] *= - derivativeActivationFunction(currentOutput[k][0]);
+                errorSigmoid[k][0] *= - activationFunction.slope(currentOutput[k][0]);
             }
 
             System.out.println("Error sigmoid");
@@ -106,7 +113,7 @@ public class NeuralNetwork {
             /* SECOND BIT */
             final double[][] slopeMatrix = Matrix.multiply(errorSigmoid, Matrix.transpose(previousOutput));
 
-            System.out.println("Slope matrix");
+            System.out.println("Slope neural_network.matrix");
             Matrix.print(slopeMatrix);
 
             /* UPDATE THE WEIGHTS */
@@ -152,6 +159,14 @@ public class NeuralNetwork {
             double[][] input = Matrix.copyOf(inputs[i]);
             double[][] expectedOutput = expectedOutputs[i];
 
+            if (input[0][0] > 0.7 && expectedOutput[0][0] == 1.0) {
+                continue;
+            }
+
+            if (input[0][0] <= 0.7 && expectedOutput[0][0] == 0.0) {
+                continue;
+            }
+
             backPropagation(input, expectedOutput);
 
             double[][] output = getOutput(input);
@@ -172,17 +187,7 @@ public class NeuralNetwork {
     }
 
     private void applyActivationFunction(double[][] A) {
-        Matrix.applyTransformation(A, NeuralNetwork::activationFunction);
-    }
-
-    /* SIGMOID ACTIVATION FUNCTION */
-    public static double activationFunction(double x) {
-        return 1.0D / (1 + Math.pow(Math.E, -x));
-    }
-
-    public static double derivativeActivationFunction(double x) {
-        double y = activationFunction(x);
-        return y * (1 - y);
+        Matrix.applyTransformation(A, activationFunction::fun);
     }
 
     /* GETTERS AND SETTERS */

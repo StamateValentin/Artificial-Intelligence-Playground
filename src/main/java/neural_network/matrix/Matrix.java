@@ -1,4 +1,4 @@
-package matrix;
+package neural_network.matrix;
 
 /* TODO: exceptions */
 public class Matrix {

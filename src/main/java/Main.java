@@ -1,7 +1,6 @@
 import exceptions.InvalidInputException;
 import function.Function;
 import function.FunctionDrawer;
-import matrix.Matrix;
 import neural_network.NeuralNetwork;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -11,7 +10,7 @@ import java.util.*;
 public class Main extends PApplet {
 
     private final List<Point> points = new ArrayList<>();
-    private NeuralNetwork neuralNetwork;
+    private final NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 1});
     private Function function;
 
     public void settings() {
@@ -26,10 +25,9 @@ public class Main extends PApplet {
 
 //        this.function = (x) -> (x * x) - 28000;
 //        this.function = (x) -> (2 * x + -400);
-        this.function = (x) -> (50);
+        this.function = (x) -> (-x);
 
         new FunctionDrawer(this, function);
-        neuralNetwork = new NeuralNetwork(new int[]{2, 1});
 
         for (int i = 0; i < 200; i++) {
             points.add(new Point(this, function));
@@ -66,32 +64,32 @@ public class Main extends PApplet {
                 double[][] expectedOutput = new double[1][1];
                 expectedOutput[0][0] = point.isRealAbove() ? 1.0 : 0.0;
 
-                if (!point.isRealAbove() && point.isAbove() && point.getY() > 0) {
-                    double[][] output = neuralNetwork.getOutput(input);
-
-                    System.out.println(point);
-                    System.out.println("Output before:");
-                    Matrix.print(output);
-                    if (output[0][0] > 0.7) {
-                        System.out.print("Prediction: above\n");
-                    }
-                    System.out.println("Input");
-                    Matrix.print(input);
-                    System.out.println("Output");
-                    Matrix.print(output);
-                    System.out.println("Expected Output");
-                    Matrix.print(expectedOutput);
-                    System.out.println("Error");
-                    Matrix.print(Matrix.subtract(expectedOutput, output));
-
-                    neuralNetwork.backPropagationDebug(input, expectedOutput);
-                    output = neuralNetwork.getOutput(input);
-                    System.out.println("After backpropagation");
-                    Matrix.print(output);
-
-                    System.out.println("");
-
-                }
+//                if (!point.isRealAbove() && point.isAbove() && point.getY() > 0) {
+//                    double[][] output = neuralNetwork.getOutput(input);
+//
+//                    System.out.println(point);
+//                    System.out.println("Output before:");
+//                    Matrix.print(output);
+//                    if (output[0][0] > 0.7) {
+//                        System.out.print("Prediction: above\n");
+//                    }
+//                    System.out.println("Input");
+//                    Matrix.print(input);
+//                    System.out.println("Output");
+//                    Matrix.print(output);
+//                    System.out.println("Expected Output");
+//                    Matrix.print(expectedOutput);
+//                    System.out.println("Error");
+//                    Matrix.print(Matrix.subtract(expectedOutput, output));
+//
+//                    neuralNetwork.backPropagationDebug(input, expectedOutput);
+//                    output = neuralNetwork.getOutput(input);
+//                    System.out.println("After backpropagation");
+//                    Matrix.print(output);
+//
+//                    System.out.println("");
+//
+//                }
 
                 inputs[i] = input;
                 expectedOutputs[i] = expectedOutput;
