@@ -1,9 +1,9 @@
-package neural_network.initialization;
+package neural_network.weights;
 
 import neural_network.matrix.Matrix;
 import static neural_network.Util.generateRandom;
 
-public class XavierInitialization implements Initialization {
+public class XavierWeightsInit implements WeightsInit {
     @Override
     public double[][] create(int n, int m) {
         double[][] matrix = new double[n][m];

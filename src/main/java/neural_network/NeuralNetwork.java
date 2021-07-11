@@ -1,37 +1,58 @@
 package neural_network;
 
 import exceptions.InvalidInputException;
-import neural_network.initialization.Initialization;
-import neural_network.initialization.RandomInitialization;
+import neural_network.activation.TanhFunction;
+import neural_network.weights.WeightsInit;
+import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 import neural_network.activation.SigmoidFunction;
+import neural_network.weights.XavierWeightsInit;
 
 /* TODO: BIAS */
 public class NeuralNetwork {
     private final double learningRate = 0.07;
 
-    private ActivationFunction activationFunction = new SigmoidFunction();
-    private Initialization initialization = new RandomInitialization();
+    private ActivationFunction activationFunction;
+    private WeightsInit weightsInit;
 
     private final double[][][] brain;
     private double cost = 0;
 
     public NeuralNetwork(int[] layerDimension) {
         this.brain = new double[layerDimension.length - 1][][];
+        this.activationFunction = new TanhFunction();
+        this.weightsInit = new RandomWeightsInit();
 
         for (int i = 0; i < brain.length; i++) {
             int n = layerDimension[i + 1];
             int m = layerDimension[i];
-            brain[i] = initialization.create(n, m);
+            brain[i] = weightsInit.create(n, m);
         }
     }
 
-    public double[][] getOutput(final double[][] input) throws InvalidInputException {
+    public NeuralNetwork(int[] layerDimension, ActivationFunction activationFunction) {
+        this(layerDimension);
+
+        this.activationFunction = activationFunction;
+    }
+
+    /* FOR DEBUG MODE */
+    public NeuralNetwork(double[][][] brain) {
+        this.brain = brain;
+        this.activationFunction = new SigmoidFunction();
+        this.weightsInit = new RandomWeightsInit();
+    }
+
+    public double[][] feedForward(final double[][] input) throws InvalidInputException {
         double[][] currentInput = input;
 
         for (int i = 0; i < brain.length; i++) {
-            currentInput = Matrix.multiply(brain[i], currentInput);
+            double[][] weights = brain[i];
+
+//            Matrix.print(weights);
+
+            currentInput = Matrix.multiply(weights, currentInput);
             applyActivationFunction(currentInput);
         }
 
@@ -55,7 +76,7 @@ public class NeuralNetwork {
             double[][] errorSigmoid = Matrix.copyOf(currentError);
 
             for (int k = 0; k < errorSigmoid.length; k++) {
-                errorSigmoid[k][0] *= - activationFunction.slope(currentOutput[k][0]);
+                errorSigmoid[k][0] *= activationFunction.slope(currentOutput[k][0]);
             }
 
             /* SECOND BIT */
@@ -64,7 +85,7 @@ public class NeuralNetwork {
             /* UPDATE THE WEIGHTS */
             for (int k = 0; k < layer.length; k++) {
                 for (int l = 0; l < layer[0].length; l++) {
-                    layer[k][l] = layer[k][l] - learningRate * slopeMatrix[k][l];
+                    layer[k][l] = layer[k][l] + (- learningRate * (- slopeMatrix[k][l]));
                 }
             }
 
@@ -169,7 +190,7 @@ public class NeuralNetwork {
 
             backPropagation(input, expectedOutput);
 
-            double[][] output = getOutput(input);
+            double[][] output = feedForward(input);
             cost += getOutputCost(output, expectedOutput);
         }
 
@@ -195,4 +216,15 @@ public class NeuralNetwork {
         return cost;
     }
 
+    public double[][][] getBrainCopy() {
+        int n = brain.length;
+
+        double[][][] brainCopy = new double[n][][];
+
+        for (int i = 0; i < n; i++) {
+            brainCopy[i] = Matrix.copyOf(brain[i]);
+        }
+
+        return brainCopy;
+    }
 }

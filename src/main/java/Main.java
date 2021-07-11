@@ -2,6 +2,7 @@ import exceptions.InvalidInputException;
 import function.Function;
 import function.FunctionDrawer;
 import neural_network.NeuralNetwork;
+import neural_network.matrix.Matrix;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -29,7 +30,7 @@ public class Main extends PApplet {
 
         new FunctionDrawer(this, function);
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 255; i++) {
             points.add(new Point(this, function));
         }
 
@@ -62,7 +63,7 @@ public class Main extends PApplet {
                 input[1][0] = normalizeY(point.getY());
 
                 double[][] expectedOutput = new double[1][1];
-                expectedOutput[0][0] = point.isRealAbove() ? 1.0 : 0.0;
+                expectedOutput[0][0] = point.isRealAbove() ? 1.0 : -1.0;
 
 //                if (!point.isRealAbove() && point.isAbove() && point.getY() > 0) {
 //                    double[][] output = neuralNetwork.getOutput(input);
@@ -112,13 +113,16 @@ public class Main extends PApplet {
 
         for (Point point : points) {
             double[][] input = new double[2][1];
-            input[0][0] = normalizeX(point.getX());
-            input[1][0] = normalizeY(point.getY());
+            input[0][0] = point.getX();
+            input[1][0] = point.getY();
 
             try {
-                double[][] output = neuralNetwork.getOutput(input);
-
-                point.setAbove(output[0][0] > 0.7);
+//                System.out.println("Point");
+//                Matrix.print(input);
+                double[][] output = neuralNetwork.feedForward(input);
+//                Matrix.print(output);
+//                System.out.println("");
+                point.setAbove(output[0][0] > 0);
 
             } catch (InvalidInputException e) {
                 e.printStackTrace();

@@ -1,3 +1,5 @@
+import neural_network.activation.ActivationFunction;
+import neural_network.activation.SigmoidFunction;
 import neural_network.matrix.Matrix;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -72,4 +74,26 @@ public class MatrixTest {
         Assertions.assertArrayEquals(expected, result);
     }
 
+    static class NeuralNetworkTest {
+
+        @Test
+        void activationFunction() {
+            double x = 0.67;
+            double expected = 0.661503159202952425768;
+
+            ActivationFunction activationFunction = new SigmoidFunction();
+
+            Assertions.assertEquals(expected, activationFunction.fun(x));
+        }
+
+        @Test
+        void derivativeActivationFunction() {
+            double x = 0.67;
+            double expected = 0.2239167295674658031824;
+
+            ActivationFunction activationFunction = new SigmoidFunction();
+
+            Assertions.assertEquals(expected, activationFunction.slope(x));
+        }
+    }
 }

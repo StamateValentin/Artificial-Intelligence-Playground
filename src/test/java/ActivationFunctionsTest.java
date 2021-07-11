@@ -1,5 +1,3 @@
-package activations;
-
 import neural_network.activation.ActivationFunction;
 import neural_network.activation.TanhFunction;
 import org.junit.jupiter.api.Test;
