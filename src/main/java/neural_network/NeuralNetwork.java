@@ -1,33 +1,38 @@
 package neural_network;
 
+import neural_network.color.Color;
 import neural_network.exceptions.InvalidInputException;
 import neural_network.activation.TanhFunction;
+import neural_network.util.Util;
 import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 import neural_network.activation.SigmoidFunction;
 
-/* TODO: BIAS */
 public class NeuralNetwork {
-    private final double learningRate = 0.07;
+    private static final double LEARNING_RATE = 0.07;
+
+    private double[][][] brain;
+    private double[][] biases;
 
     private ActivationFunction activationFunction;
     private WeightsInit weightsInit;
 
-    private final double[][][] brain;
-    private double cost = 0;
-
     public NeuralNetwork(int[] layerDimension) {
-        this.brain = new double[layerDimension.length - 1][][];
         this.activationFunction = new TanhFunction();
         this.weightsInit = new RandomWeightsInit();
 
-        for (int i = 0; i < brain.length; i++) {
-            int n = layerDimension[i + 1];
-            int m = layerDimension[i];
-            brain[i] = weightsInit.create(n, m);
+        int len = layerDimension.length;
+
+        this.brain = new double[len - 1][][];
+        this.biases = len == 2 ? null : new double[len - 2][];
+
+        if (biases != null) {
+            initBias(layerDimension);
         }
+
+        initBrain(layerDimension);
     }
 
     public NeuralNetwork(int[] layerDimension, ActivationFunction activationFunction) {
@@ -38,18 +43,38 @@ public class NeuralNetwork {
 
     /* FOR DEBUG MODE */
     public NeuralNetwork(double[][][] brain) {
+        this(new int[]{1, 2});
         this.brain = brain;
         this.activationFunction = new SigmoidFunction();
         this.weightsInit = new RandomWeightsInit();
     }
 
+    /* INITIALIZATION */
+    private void initBias(int[] layerDimension) {
+        for (int i = 0; i < biases.length; i++) {
+            int laterSize = layerDimension[i];
+            biases[i] = new double[laterSize];
+
+            for (int l = 0; l < laterSize; l++) {
+                biases[i][l] = Util.generateRandom(0, 1);
+            }
+        }
+    }
+
+    private void initBrain(int[] layerDimension) {
+        for (int i = 0; i < brain.length; i++) {
+            int n = layerDimension[i + 1];
+            int m = layerDimension[i];
+            brain[i] = weightsInit.create(n, m);
+        }
+    }
+
+    /**/
     public double[][] feedForward(final double[][] input) throws InvalidInputException {
         double[][] currentInput = input;
 
         for (int i = 0; i < brain.length; i++) {
             double[][] weights = brain[i];
-
-//            Matrix.print(weights);
 
             currentInput = Matrix.multiply(weights, currentInput);
             applyActivationFunction(currentInput);
@@ -84,70 +109,9 @@ public class NeuralNetwork {
             /* UPDATE THE WEIGHTS */
             for (int k = 0; k < layer.length; k++) {
                 for (int l = 0; l < layer[0].length; l++) {
-                    layer[k][l] = layer[k][l] + (- learningRate * (- slopeMatrix[k][l]));
+                    layer[k][l] = layer[k][l] + (-LEARNING_RATE * (- slopeMatrix[k][l]));
                 }
             }
-
-            currentOutput = previousOutput;
-            currentError = previousError;
-        }
-    }
-
-    public void backPropagationDebug(double[][] input, double[][] expected) {
-        System.out.println("Inside:");
-        double[][][] outputs = getOutputs(input);
-
-        double[][] currentOutput = outputs[outputs.length - 1];
-        double[][] currentError = Matrix.subtract(expected, currentOutput);
-
-        System.out.println("Inside Current Output");
-        Matrix.print(currentOutput);
-        System.out.println("Inside Current Error");
-        Matrix.print(currentError);
-
-        for (int i = brain.length - 1; i >= 0; i--) {
-            System.out.println("Iteration " + i);
-            final double[][] layer = brain[i];
-            System.out.println("Layer");
-            Matrix.print(layer);
-            final double[][] previousOutput = outputs[i];
-            System.out.println("Previous Output");
-            Matrix.print(previousOutput);
-
-            final double[][] layerTranspose = Matrix.transpose(layer);
-
-            final double[][] previousError = Matrix.multiply(layerTranspose, currentError);
-            System.out.println("Previous error");
-            Matrix.print(previousError);
-
-            /* FIST BIT */
-            double[][] errorSigmoid = Matrix.copyOf(currentError);
-
-            for (int k = 0; k < errorSigmoid.length; k++) {
-                errorSigmoid[k][0] *= - activationFunction.slope(currentOutput[k][0]);
-            }
-
-            System.out.println("Error sigmoid");
-            Matrix.print(errorSigmoid);
-
-            /* SECOND BIT */
-            final double[][] slopeMatrix = Matrix.multiply(errorSigmoid, Matrix.transpose(previousOutput));
-
-            System.out.println("Slope neural_network.matrix");
-            Matrix.print(slopeMatrix);
-
-            /* UPDATE THE WEIGHTS */
-            for (int k = 0; k < layer.length; k++) {
-                for (int l = 0; l < layer[0].length; l++) {
-                    System.out.println("Initial:" + layer[k][l]);
-                    System.out.println("Value: " + learningRate * slopeMatrix[k][l]);
-                    layer[k][l] = layer[k][l] - learningRate * slopeMatrix[k][l];
-                    System.out.println("After: " + layer[k][l]);
-                }
-            }
-
-            System.out.println("After update");
-            Matrix.print(layer);
 
             currentOutput = previousOutput;
             currentError = previousError;
@@ -173,7 +137,6 @@ public class NeuralNetwork {
 
     public void trainIteration(double[][][] inputs, double[][][] expectedOutputs) throws InvalidInputException {
         int n = inputs.length;
-        double cost = 0;
 
         for (int i = 0; i < n; i++) {
             double[][] input = Matrix.copyOf(inputs[i]);
@@ -188,12 +151,7 @@ public class NeuralNetwork {
             }
 
             backPropagation(input, expectedOutput);
-
-            double[][] output = feedForward(input);
-            cost += getOutputCost(output, expectedOutput);
         }
-
-        this.cost = cost;
     }
 
     private double getOutputCost(double[][] output, double[][] expectedOutput) {
@@ -211,19 +169,36 @@ public class NeuralNetwork {
     }
 
     /* GETTERS AND SETTERS */
-    public double getCost() {
-        return cost;
-    }
-
-    public double[][][] getBrainCopy() {
+    public void printBrain() {
         int n = brain.length;
 
-        double[][][] brainCopy = new double[n][][];
+        System.out.println(Color.GREEN_BOLD + "---=== Neural Network Brain ===---" + Color.RESET);
 
         for (int i = 0; i < n; i++) {
-            brainCopy[i] = Matrix.copyOf(brain[i]);
+            System.out.printf("Layer: %d\n", i);
+            Matrix.println(brain[i]);
         }
 
-        return brainCopy;
+        System.out.println("");
+    }
+
+    public void printBiases() {
+        int n = biases.length;
+
+        System.out.println(Color.GREEN_BOLD + "---=== Neural Network Biases ===---" + Color.RESET);
+
+        System.out.print(Color.BLUE_BOLD);
+        for (int i = 0; i < n; i++) {
+            System.out.printf(Color.RESET + "Layer: %d\n" + Color.BLUE_BOLD, i + 1);
+
+            int m = biases[i].length;
+
+            for (int j = 0; j < m; j++) {
+                System.out.printf("| %7.3f |\n", biases[i][j]);
+            }
+        }
+
+        System.out.println("");
+        System.out.println(Color.RESET);
     }
 }

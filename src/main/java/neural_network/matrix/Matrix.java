@@ -1,5 +1,7 @@
 package neural_network.matrix;
 
+import neural_network.color.Color;
+
 /* TODO: neural_network.exceptions */
 public class Matrix {
 
@@ -51,6 +53,7 @@ public class Matrix {
     }
 
     public static void print(double[][] A) {
+        System.out.print(Color.BLUE_BOLD);
         for (int i = 0; i < A.length; i++) {
             for (int j = 0; j < A[0].length; j++) {
                 if (j == 0) {
@@ -61,8 +64,16 @@ public class Matrix {
                     System.out.print("|");
                 }
             }
-            System.out.println("");
+
+            if (i != A.length - 1) {
+                System.out.println("");
+            }
         }
+        System.out.print(Color.RESET);
+    }
+
+    public static void println(double[][] A) {
+        print(A);
         System.out.println("");
     }
 

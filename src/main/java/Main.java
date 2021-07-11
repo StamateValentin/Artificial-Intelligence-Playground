@@ -4,7 +4,7 @@ import processing.core.PConstants;
 
 public class Main extends PApplet {
 
-    private final NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 1});
+    private final NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{3, 2, 1});
 
     public void settings() {
         size(980, 600);
@@ -15,6 +15,10 @@ public class Main extends PApplet {
         frameRate(30);
         strokeCap(ROUND);
         shapeMode(CENTER);
+
+        neuralNetwork.printBrain();
+        neuralNetwork.printBiases();
+
     }
 
     public void draw() {
@@ -26,8 +30,6 @@ public class Main extends PApplet {
         background(25);
 
         stroke(255);
-        line(- width / 2, 0, width / 2, 0);
-        line(0, height / 2, 0, - height / 2);
 
         popMatrix();
     }
