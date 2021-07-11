@@ -1,4 +1,4 @@
-import exceptions.InvalidInputException;
+import neural_network.exceptions.InvalidInputException;
 import neural_network.NeuralNetwork;
 import neural_network.matrix.Matrix;
 import org.junit.jupiter.api.Test;

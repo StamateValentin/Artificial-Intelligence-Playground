@@ -1,13 +1,12 @@
 package neural_network;
 
-import exceptions.InvalidInputException;
+import neural_network.exceptions.InvalidInputException;
 import neural_network.activation.TanhFunction;
 import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 import neural_network.activation.SigmoidFunction;
-import neural_network.weights.XavierWeightsInit;
 
 /* TODO: BIAS */
 public class NeuralNetwork {

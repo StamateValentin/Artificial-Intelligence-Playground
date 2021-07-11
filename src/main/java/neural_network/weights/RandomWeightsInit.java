@@ -1,7 +1,7 @@
 package neural_network.weights;
 
 import neural_network.matrix.Matrix;
-import static neural_network.Util.generateRandom;
+import static neural_network.util.Util.generateRandom;
 
 public class RandomWeightsInit implements WeightsInit {
     @Override

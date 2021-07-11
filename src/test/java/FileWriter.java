@@ -1,4 +1,4 @@
-import neural_network.NeuralNetworkWriter;
+import neural_network.file.NeuralNetworkWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package neural_network;
+package neural_network.file;
 
 import java.io.FileWriter;
 import java.io.IOException;

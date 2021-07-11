@@ -1,6 +1,6 @@
 package neural_network.matrix;
 
-/* TODO: exceptions */
+/* TODO: neural_network.exceptions */
 public class Matrix {
 
     public static double[][] transpose(final double[][] A) {
