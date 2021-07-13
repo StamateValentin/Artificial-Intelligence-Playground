@@ -2,8 +2,27 @@ package neural_network.matrix;
 
 import neural_network.color.Color;
 
-/* TODO: neural_network.exceptions */
 public class Matrix {
+
+    public static double[][] toRowMatrix(final double[] V) {
+        int m = V.length;
+        double[][] matrix = new double[1][m];
+
+        System.arraycopy(V, 0, matrix[0], 0, m);
+
+        return matrix;
+    }
+
+    public static double[][] toColumnMatrix(final double[] V) {
+        int n = V.length;
+        double[][] matrix = new double[n][1];
+
+        for (int i = 0; i < n; i++) {
+            matrix[i][0] = V[i];
+        }
+
+        return matrix;
+    }
 
     public static double[][] transpose(final double[][] A) {
         int n = A.length;
@@ -37,6 +56,21 @@ public class Matrix {
         return output;
     }
 
+    public static double[][] add(final double[][] A, final double[][] B) {
+        int n = A.length;
+        int m = A[0].length;
+
+        double[][] sum = new double[n][m];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                sum[i][j] = A[i][j] + B[i][j];
+            }
+        }
+
+        return sum;
+    }
+
     public static double[][] subtract(final double[][] A, final double[][] B) {
         int n = A.length;
         int m = A[0].length;
@@ -52,7 +86,7 @@ public class Matrix {
         return difference;
     }
 
-    public static void print(double[][] A) {
+    public static void print(final double[][] A) {
         System.out.print(Color.BLUE_BOLD);
         for (int i = 0; i < A.length; i++) {
             for (int j = 0; j < A[0].length; j++) {
@@ -70,14 +104,10 @@ public class Matrix {
             }
         }
         System.out.print(Color.RESET);
-    }
-
-    public static void println(double[][] A) {
-        print(A);
         System.out.println("");
     }
 
-    public static double[][] copyOf(double[][] A) {
+    public static double[][] copyOf(final double[][] A) {
         double[][] copy = new double[A.length][A[0].length];
 
         for (int i = 0; i < A.length; i++) {
@@ -89,7 +119,7 @@ public class Matrix {
         return copy;
     }
 
-    public static boolean equalWith(double[][] A, double[][] B) {
+    public static boolean equalWith(final double[][] A, final double[][] B) {
         if (A.length != B.length || A[0].length != B[0].length) {
             return false;
         }
@@ -105,7 +135,7 @@ public class Matrix {
         return true;
     }
 
-    public static void applyTransformation(double[][] A, Transform transform) {
+    public static void applyTransformation(final double[][] A, Transform transform) {
         for (int i = 0; i < A.length; i++) {
             for (int j = 0; j < A[0].length; j++) {
                 A[i][j] = transform.applyFunction(A[i][j]);

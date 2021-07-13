@@ -2,7 +2,7 @@ import neural_network.NeuralNetwork;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Main extends PApplet {
+public class MainProcessing extends PApplet {
 
     private final NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{3, 2, 1});
 

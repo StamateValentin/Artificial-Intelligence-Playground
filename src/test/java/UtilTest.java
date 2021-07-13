@@ -18,7 +18,7 @@ public class UtilTest {
         WeightsInit weightsInit = new RandomWeightsInit();
         double[][] result = weightsInit.create(5, 8);
 
-        Matrix.print(result);
+        Matrix.println(result);
     }
 
 }

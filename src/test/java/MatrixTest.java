@@ -74,6 +74,31 @@ public class MatrixTest {
         Assertions.assertArrayEquals(expected, result);
     }
 
+    @Test
+    public void sum() {
+        double[][] A = new double[][] {
+                {15, 27},
+                {6, 7},
+                {26, 63}
+        };
+
+        double[][] B = new double[][] {
+                {15, 27},
+                {6, 7},
+                {26, 63}
+        };
+
+        double[][] expected = new double[][] {
+                {30, 54},
+                {12, 14},
+                {52, 126}
+        };
+
+        double[][] result = Matrix.add(A, B);
+
+        Assertions.assertArrayEquals(expected, result);
+    }
+
     static class NeuralNetworkTest {
 
         @Test
