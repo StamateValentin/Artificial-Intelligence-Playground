@@ -9,7 +9,7 @@ public class XavierWeightsInit implements WeightsInit {
         double[][] matrix = new double[n][m];
 
         double xavierInterval = Math.pow(m, -0.5);
-        Matrix.applyTransformation(matrix, (x) -> generateRandom(-xavierInterval, xavierInterval));
+        matrix = Matrix.map(matrix, (x) -> generateRandom(-xavierInterval, xavierInterval));
 
         return matrix;
     }
