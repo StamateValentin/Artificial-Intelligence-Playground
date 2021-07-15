@@ -106,6 +106,9 @@ public class NeuralNetwork {
 
             double[][] deltaWeights = Matrix.multiply(gradients, error);
 
+            Matrix.println(error);
+            Matrix.println(gradients);
+
             deltaWeights = Matrix.map(deltaWeights, x -> x * LEARNING_RATE);
 
             double[][] deltaBiases = Matrix.copyOf(deltaWeights);

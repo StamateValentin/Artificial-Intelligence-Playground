@@ -40,14 +40,22 @@ public class Matrix {
     }
 
     public static double[][] multiply(double[][] A, double[][] B) {
-        int n = A.length;
-        int m = A[0].length;
+        int nA = A.length;
+        int mA = A[0].length;
 
-        double[][] output = new double[n][B[0].length];
+        int nB = B.length;
+        int mB = B[0].length;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < B[0].length; j++) {
-                for (int k = 0; k < m; k++) {
+        if (nA != mB || mA != nB) {
+            System.out.println("Multiply: Invalid matrix size.");
+            return create(1, 1);
+        }
+
+        double[][] output = new double[nA][mB];
+
+        for (int i = 0; i < nA; i++) {
+            for (int j = 0; j < mB; j++) {
+                for (int k = 0; k < mA; k++) {
                     output[i][j] += A[i][k] * B[k][j];
                 }
             }
@@ -57,13 +65,21 @@ public class Matrix {
     }
 
     public static double[][] add(double[][] A, double[][] B) {
-        int n = A.length;
-        int m = A[0].length;
+        int nA = A.length;
+        int mA = A[0].length;
 
-        double[][] sum = new double[n][m];
+        int nB = B.length;
+        int mB = B[0].length;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
+        if (nA != nB || mA != mB) {
+            System.out.println("Add: Invalid matrix size");
+            return create(1, 1);
+        }
+
+        double[][] sum = new double[nA][mA];
+
+        for (int i = 0; i < nA; i++) {
+            for (int j = 0; j < mA; j++) {
                 sum[i][j] = A[i][j] + B[i][j];
             }
         }
@@ -72,13 +88,21 @@ public class Matrix {
     }
 
     public static double[][] subtract(double[][] A, double[][] B) {
-        int n = A.length;
-        int m = A[0].length;
+        int nA = A.length;
+        int mA = A[0].length;
 
-        double[][] difference = new double[n][m];
+        int nB = B.length;
+        int mB = B[0].length;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
+        if (nA != nB || mA != mB) {
+            System.out.println("Subtract: Invalid matrix size");
+            return create(1, 1);
+        }
+
+        double[][] difference = new double[nA][mA];
+
+        for (int i = 0; i < nA; i++) {
+            for (int j = 0; j < mA; j++) {
                 difference[i][j] = A[i][j] - B[i][j];
             }
         }
@@ -126,6 +150,7 @@ public class Matrix {
 
     public static boolean equalWith(double[][] A, double[][] B) {
         if (A.length != B.length || A[0].length != B[0].length) {
+            System.out.println("Equals With: Invalid matrix size.");
             return false;
         }
 
