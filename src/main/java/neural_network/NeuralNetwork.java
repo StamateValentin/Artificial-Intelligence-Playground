@@ -4,6 +4,7 @@ import neural_network.bias.BiasInit;
 import neural_network.bias.RandomBias;
 import neural_network.color.Color;
 import neural_network.activation.TanhFunction;
+import neural_network.training.TrainingData;
 import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
@@ -68,8 +69,8 @@ public class NeuralNetwork {
     }
 
     /**/
-    public double[][] feedForward(final double[][] input) {
-        double[][] currentInput = input;
+    public double[][] feedForward(final double[] input) {
+        double[][] currentInput = Matrix.toColumnMatrix(input);
 
         int loops = brain.length;
 
@@ -86,12 +87,15 @@ public class NeuralNetwork {
         return currentInput;
     }
 
-    public void backPropagation(double[][] initialInput, double[][] target) {
+    public void backPropagation(double[] initialInput, double[] target) {
         int layers = brain.length + 1;
 
-        double[][][] rawInputs = getRawInputs(initialInput);
-        double[][][] inputs = getInputs(initialInput);
-        double[][][] errors = getErrors(Matrix.subtract(target, rawInputs[layers - 1]));
+        double[][] matrixInput = Matrix.toColumnMatrix(initialInput);
+        double[][] matrixTarget = Matrix.toColumnMatrix(target);
+
+        double[][][] rawInputs = getRawInputs(matrixInput);
+        double[][][] inputs = getInputs(matrixInput);
+        double[][][] errors = getErrors(Matrix.subtract(matrixTarget, rawInputs[layers - 1]));
 
         for (int i = layers - 1; i >= 1; i--) {
             /* DeltaWeight ~= learningRate * (currentError * derr(currentRawOutput)) * tr(input) */
@@ -102,12 +106,20 @@ public class NeuralNetwork {
             double[][] gradients = Matrix.map(rawOutput, activationFunction::slope);
             double[][] deltaWeights = Matrix.hadamardProduct(error, gradients);
 
-            deltaWeights = Matrix.dotProduct(deltaWeights, inputTransposed);
             deltaWeights = Matrix.map(deltaWeights, (x) -> x * LEARNING_RATE);
 
+            double[][] deltaBiases = Matrix.copyOf(deltaWeights);
+
+            deltaWeights = Matrix.dotProduct(deltaWeights, inputTransposed);
+
             brain[i - 1] = Matrix.add(brain[i - 1], deltaWeights);
+            biases[i] = Matrix.add(biases[i], deltaBiases);
         }
 
+    }
+
+    public void train(TrainingData trainingData) {
+        trainingData.randomLoop(this::backPropagation);
     }
 
     private double[][][] getInputs(double[][] input) {
@@ -194,4 +206,5 @@ public class NeuralNetwork {
 
         System.out.println("");
     }
+
 }
