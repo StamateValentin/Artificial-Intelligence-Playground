@@ -19,11 +19,9 @@ public class MainClass {
         neuralNetwork.printBiases();
 
         double[][] input = Matrix.toColumnMatrix(new double[]{0.4, 0.6, 0.1, 0.7});
-
         double[][] output = neuralNetwork.feedForward(input);
         double[][] expectedOutput = Matrix.toColumnMatrix(new double[]{1.0});
 
-        System.out.println("Backpropagation");
         neuralNetwork.backPropagation(input, expectedOutput);
 
         System.out.println("Output");

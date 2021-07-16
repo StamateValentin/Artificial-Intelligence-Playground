@@ -10,7 +10,7 @@ import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 
 public class NeuralNetwork {
-    private static final double LEARNING_RATE = 0.07;
+    private static final double LEARNING_RATE = 0.1;
 
     private final double[][][] brain;
     private final double[][][] biases;
@@ -75,9 +75,10 @@ public class NeuralNetwork {
 
         for (int i = 0; i < loops; i++) {
             double[][] weights = brain[i];
+            double[][] biases = this.biases[i + 1];
 
-            currentInput = Matrix.multiply(weights, currentInput);
-            currentInput = Matrix.add(currentInput, biases[i]);
+            currentInput = Matrix.dotProduct(weights, currentInput);
+            currentInput = Matrix.add(currentInput, biases);
 
             currentInput = Matrix.map(currentInput, activationFunction::fun);
         }
@@ -85,39 +86,48 @@ public class NeuralNetwork {
         return currentInput;
     }
 
-    public void backPropagation(double[][] input, double[][] target) {
+    public void backPropagation(double[][] initialInput, double[][] target) {
         int layers = brain.length + 1;
 
-        double[][][] rawInput = getRawInputs(input);
-        double[][] currentError = Matrix.subtract(target, rawInput[layers - 1]);
-        double[][][] errors = getErrors(currentError);
+        double[][][] rawInputs = getRawInputs(initialInput);
+        double[][][] inputs = getInputs(initialInput);
+        double[][][] errors = getErrors(Matrix.subtract(target, rawInputs[layers - 1]));
 
-        System.out.println("Input");
-        for (int i = 0; i < layers; i++) {
-            Matrix.println(rawInput[i]);
-        }
-
-        System.out.println("Deltas");
         for (int i = layers - 1; i >= 1; i--) {
-            double[][] previousInput = rawInput[i - 1];
+            /* DeltaWeight ~= learningRate * (currentError * derr(currentRawOutput)) * tr(input) */
+            double[][] rawOutput = rawInputs[i];
+            double[][] inputTransposed = Matrix.transpose(inputs[i - 1]);;
             double[][] error = errors[i];
 
-            double[][] gradients = Matrix.map(previousInput, activationFunction::slope);
+            double[][] gradients = Matrix.map(rawOutput, activationFunction::slope);
+            double[][] deltaWeights = Matrix.hadamardProduct(error, gradients);
 
-            double[][] deltaWeights = Matrix.multiply(gradients, error);
+            deltaWeights = Matrix.dotProduct(deltaWeights, inputTransposed);
+            deltaWeights = Matrix.map(deltaWeights, (x) -> x * LEARNING_RATE);
 
-            Matrix.println(error);
-            Matrix.println(gradients);
-
-            deltaWeights = Matrix.map(deltaWeights, x -> x * LEARNING_RATE);
-
-            double[][] deltaBiases = Matrix.copyOf(deltaWeights);
-
-            deltaWeights = Matrix.multiply(deltaWeights, Matrix.transpose(previousInput));
-
-            // now, how to update the weights and biases?
+            brain[i - 1] = Matrix.add(brain[i - 1], deltaWeights);
         }
 
+    }
+
+    private double[][][] getInputs(double[][] input) {
+        int layers = brain.length + 1;
+
+        double[][][] inputs = new double[layers][][];
+
+        inputs[0] = Matrix.copyOf(input);
+
+        for (int i = 1; i < layers; i++) {
+            double[][] weights = brain[i - 1];
+            double[][] biases = this.biases[i];
+
+            inputs[i] = Matrix.dotProduct(weights, inputs[i - 1]);
+
+            inputs[i] = Matrix.add(inputs[i], biases);
+            inputs[i] = Matrix.map(inputs[i], activationFunction::fun);
+        }
+
+        return inputs;
     }
 
     private double[][][] getRawInputs(double[][] input) {
@@ -131,10 +141,10 @@ public class NeuralNetwork {
 
         for (int i = 1; i < layers; i++) {
             double[][] weights = brain[i - 1];
-            double[][] bias = biases[i - 1];
+            double[][] biases = this.biases[i];
 
-            inputs[i] = Matrix.multiply(weights, inputs[i - 1]);
-            inputs[i] = Matrix.add(inputs[i], bias);
+            inputs[i] = Matrix.dotProduct(weights, inputs[i - 1]);
+            inputs[i] = Matrix.add(inputs[i], biases);
 
             rawInputs[i] = Matrix.copyOf(inputs[i]);
             inputs[i] = Matrix.map(inputs[i], activationFunction::fun);
@@ -152,7 +162,7 @@ public class NeuralNetwork {
         for (int i = layers - 2; i >= 0; i--) {
             double[][] weightsTransposed = Matrix.transpose(brain[i]);
 
-            errors[i] = Matrix.multiply(weightsTransposed, errors[i + 1]);
+            errors[i] = Matrix.dotProduct(weightsTransposed, errors[i + 1]);
         }
 
         return errors;

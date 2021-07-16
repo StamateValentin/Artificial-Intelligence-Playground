@@ -39,15 +39,15 @@ public class Matrix {
         return newA;
     }
 
-    public static double[][] multiply(double[][] A, double[][] B) {
+    public static double[][] dotProduct(double[][] A, double[][] B) {
         int nA = A.length;
         int mA = A[0].length;
 
         int nB = B.length;
         int mB = B[0].length;
 
-        if (nA != mB || mA != nB) {
-            System.out.println("Multiply: Invalid matrix size.");
+        if (mA != nB) {
+            System.out.println("Dot Product: Invalid matrix size.");
             return create(1, 1);
         }
 
@@ -62,6 +62,29 @@ public class Matrix {
         }
 
         return output;
+    }
+
+    public static double[][] hadamardProduct(double[][] A, double[][] B) {
+        int nA = A.length;
+        int mA = A[0].length;
+
+        int nB = B.length;
+        int mB = B[0].length;
+
+        if (nA != nB || mA != mB) {
+            System.out.println("Hadamard Product: Invalid matrix size");
+            return create(1, 1);
+        }
+
+        double[][] product = new double[nA][mA];
+
+        for (int i = 0; i < nA; i++) {
+            for (int j = 0; j < mA; j++) {
+                product[i][j] = A[i][j] * B[i][j];
+            }
+        }
+
+        return product;
     }
 
     public static double[][] add(double[][] A, double[][] B) {

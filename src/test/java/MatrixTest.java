@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 public class MatrixTest {
 
     @Test
-    public void multiplication() {
+    public void hadamardProduct() {
         double[][] A = new double[][] {
-                {1, 2, 1},
-                {0, 1, 0},
-                {2, 3, 4}
+                {1, 2},
+                {0, 1},
+                {2, 3}
         };
 
         double[][] B = new double[][] {
@@ -20,13 +20,36 @@ public class MatrixTest {
                 {1, 8}
         };
 
-        double[][] expected = new double[][] {
-                {15, 27},
-                {6, 7},
-                {26, 63}
+        double[][] expected = new double[][]{
+                {2, 10},
+                {0, 7},
+                {2, 24}
         };
 
-        double[][] result = Matrix.multiply(A, B);
+        double[][] result = Matrix.hadamardProduct(A, B);
+
+        Assertions.assertArrayEquals(expected, result);
+    }
+
+    @Test
+    public void dotProduct() {
+        double[][] A = new double[][] {
+                {1},
+                {4},
+                {2}
+        };
+
+        double[][] B = new double[][] {
+                {2, 5, 7, 4, 3}
+        };
+
+        double[][] expected = new double[][] {
+                {2, 5, 7, 4, 3},
+                {8, 20, 28, 16, 12},
+                {4, 10, 14, 8, 6}
+        };
+
+        double[][] result = Matrix.dotProduct(A, B);
 
         Assertions.assertArrayEquals(expected, result);
     }
