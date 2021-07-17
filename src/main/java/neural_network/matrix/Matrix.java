@@ -195,19 +195,33 @@ public class Matrix {
         return true;
     }
 
-    public static double[][] map(double[][] A, Transform transform) {
+    public static double[][] map(double[][] A, Lambda lambda) {
         double[][] matrix = Matrix.copyOf(A);
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                matrix[i][j] = transform.applyFunction(matrix[i][j]);
+                matrix[i][j] = lambda.fun(matrix[i][j]);
             }
         }
 
         return matrix;
     }
 
+    public static void loop(double[][] A, Loop loop) {
+        for (double[] line : A) {
+            for (double x : line) {
+                loop.fun(x);
+            }
+        }
+    }
+
     public static double[][] create(int n, int m) {
         return new double[n][m];
+    }
+
+    public static void printMatrices(double[][][] errors) {
+        for (double[][] error : errors) {
+            println(error);
+        }
     }
 }

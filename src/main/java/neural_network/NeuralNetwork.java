@@ -10,8 +10,17 @@ import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
 public class NeuralNetwork {
-    private static final double LEARNING_RATE = 0.1;
+    private static final double LEARNING_RATE = 0.01;
+    private static final String EXPORT_FILE = "snapshot.txt";
 
     private final double[][][] brain;
     private final double[][][] biases;
@@ -46,6 +55,56 @@ public class NeuralNetwork {
 
         initBias(layerDimension);
         initBrain(layerDimension);
+    }
+
+    /** Initializes the neural network with the given parameters and import the
+     * weights and biases from the exported file */
+    public NeuralNetwork(ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit) throws FileNotFoundException {
+        this.activationFunction = activationFunction;
+        this.weightsInit = weightsInit;
+        this.biasInit = biasInit;
+
+        Path path = Paths.get(EXPORT_FILE);
+
+        Scanner scanner = new Scanner(path.toFile());
+
+        int brainLength = scanner.nextInt();
+        brain = new double[brainLength][][];
+
+        for (int l = 0; l < brainLength; l++) {
+            int n = scanner.nextInt();
+            int m = scanner.nextInt();
+
+            double[][] matrixBuffer = new double[n][m];
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    double x = scanner.nextDouble();
+                    matrixBuffer[i][j] = x;
+                }
+            }
+
+            brain[l] = Matrix.copyOf(matrixBuffer);
+        }
+
+        int biasLength = scanner.nextInt();
+        biases = new double[biasLength][][];
+
+        for (int l = 0; l < biasLength; l++) {
+            int n = scanner.nextInt();
+            int m = scanner.nextInt();
+
+            double[][] biasBuffer = new double[n][m];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    double x = scanner.nextDouble();
+                    biasBuffer[i][j] = x;
+                }
+            }
+
+            biases[l] = Matrix.copyOf(biasBuffer);
+        }
+
     }
 
     /* INITIALIZATION */
@@ -205,6 +264,47 @@ public class NeuralNetwork {
         }
 
         System.out.println("");
+    }
+
+    public void exportNeuralNetwork() {
+        Path path = Paths.get(EXPORT_FILE);
+
+        try {
+            FileWriter fileWriter = new FileWriter(path.toFile());
+
+            int len = brain.length;
+            fileWriter.write(len + "\n");
+
+            for (double[][] matrix : brain) {
+                fileWriter.write(matrix.length + " " + matrix[0].length + "\n");
+
+                for (double[] line : matrix) {
+                    for (double x : line) {
+                        fileWriter.write(x + " ");
+                    }
+                    fileWriter.write("\n");
+                }
+            }
+
+            fileWriter.write("\n");
+
+            fileWriter.write(biases.length + "\n");
+            for (double[][] bias : biases) {
+                fileWriter.write(bias.length + " " + bias[0].length + "\n");
+
+                for (double[] line : bias) {
+                    for (double x : line) {
+                        fileWriter.write(x + " ");
+                    }
+                    fileWriter.write("\n");
+                }
+            }
+
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
