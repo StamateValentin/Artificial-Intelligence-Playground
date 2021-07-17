@@ -219,8 +219,8 @@ public class Matrix {
         return new double[n][m];
     }
 
-    public static void printMatrices(double[][][] errors) {
-        for (double[][] error : errors) {
+    public static void print(double[][][] matrixList) {
+        for (double[][] error : matrixList) {
             println(error);
         }
     }

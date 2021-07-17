@@ -11,7 +11,6 @@ import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class NeuralNetwork {
-    private static final double LEARNING_RATE = 0.01;
+    private static final double LEARNING_RATE = 0.1;
     private static final String EXPORT_FILE = "snapshot.txt";
 
     private final double[][][] brain;
@@ -154,13 +153,14 @@ public class NeuralNetwork {
 
         double[][][] rawInputs = getRawInputs(matrixInput);
         double[][][] inputs = getInputs(matrixInput);
-        double[][][] errors = getErrors(Matrix.subtract(matrixTarget, rawInputs[layers - 1]));
+        double[][][] errors = getErrors(Matrix.subtract(matrixTarget, inputs[layers - 1]));
 
         for (int i = layers - 1; i >= 1; i--) {
             /* DeltaWeight ~= learningRate * (currentError * derr(currentRawOutput)) * tr(input) */
             double[][] rawOutput = rawInputs[i];
             double[][] inputTransposed = Matrix.transpose(inputs[i - 1]);;
             double[][] error = errors[i];
+
 
             double[][] gradients = Matrix.map(rawOutput, activationFunction::slope);
             double[][] deltaWeights = Matrix.hadamardProduct(error, gradients);
@@ -224,11 +224,11 @@ public class NeuralNetwork {
         return rawInputs;
     }
 
-    private double[][][] getErrors(double[][] output) {
+    private double[][][] getErrors(double[][] error) {
         int layers = brain.length + 1;
 
         double[][][] errors = new double[layers][][];
-        errors[layers - 1] = Matrix.copyOf(output);
+        errors[layers - 1] = Matrix.copyOf(error);
 
         for (int i = layers - 2; i >= 0; i--) {
             double[][] weightsTransposed = Matrix.transpose(brain[i]);
@@ -266,7 +266,7 @@ public class NeuralNetwork {
         System.out.println("");
     }
 
-    public void exportNeuralNetwork() {
+    public void export() {
         Path path = Paths.get(EXPORT_FILE);
 
         try {
