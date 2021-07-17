@@ -1,6 +1,11 @@
 package neural_network.activation;
 
-public class SignFunction implements ActivationFunction {
+public class SignFunction extends ActivationFunction {
+
+    public SignFunction() {
+        super(ActivationFunctions.SIGN_FUNCTION);
+    }
+
     @Override
     public double fun(double x) {
         return x < 0 ? 0 : 1;

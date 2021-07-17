@@ -1,6 +1,10 @@
 package neural_network.activation;
 
-public class BinaryStep implements ActivationFunction {
+public class BinaryStep extends ActivationFunction {
+
+    public BinaryStep() {
+        super(ActivationFunctions.BINARY_STEP);
+    }
 
     @Override
     public double fun(double x) {

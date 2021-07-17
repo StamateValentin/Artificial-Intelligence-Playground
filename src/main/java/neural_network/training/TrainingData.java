@@ -34,5 +34,13 @@ public class TrainingData {
         }
     }
 
+    public void loop(OutputData outputData) {
+        int n = size();
+
+        for (int i = 0; i < n; i++) {
+            outputData.fun(trainingData.get(i), trainingTarget.get(i));
+        }
+    }
+
 
 }

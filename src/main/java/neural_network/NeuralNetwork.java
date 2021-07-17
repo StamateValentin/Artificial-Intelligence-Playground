@@ -9,7 +9,6 @@ import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
 import neural_network.matrix.Matrix;
 import neural_network.activation.ActivationFunction;
-
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class NeuralNetwork {
-    private static final double LEARNING_RATE = 0.1;
+    private double learningRate = 0.1;
     private static final String EXPORT_FILE = "snapshot.txt";
 
     private final double[][][] brain;
@@ -28,6 +27,7 @@ public class NeuralNetwork {
     private final WeightsInit weightsInit;
     private final BiasInit biasInit;
 
+    /** Get the layer sizes and initializes the rest of the element with their default values */
     public NeuralNetwork(int[] layerDimension) {
         this.activationFunction = new TanhFunction();
         this.weightsInit = new RandomWeightsInit();
@@ -67,43 +67,19 @@ public class NeuralNetwork {
 
         Scanner scanner = new Scanner(path.toFile());
 
-        int brainLength = scanner.nextInt();
-        brain = new double[brainLength][][];
+        int layers = scanner.nextInt();
+        brain = new double[layers][][];
+        biases = new double[layers + 1][][];
 
-        for (int l = 0; l < brainLength; l++) {
-            int n = scanner.nextInt();
-            int m = scanner.nextInt();
-
-            double[][] matrixBuffer = new double[n][m];
-
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    double x = scanner.nextDouble();
-                    matrixBuffer[i][j] = x;
-                }
-            }
-
-            brain[l] = Matrix.copyOf(matrixBuffer);
+        for (int l = 0; l < layers; l++) {
+            brain[l] = Matrix.readMatrix(scanner);
         }
 
-        int biasLength = scanner.nextInt();
-        biases = new double[biasLength][][];
-
-        for (int l = 0; l < biasLength; l++) {
-            int n = scanner.nextInt();
-            int m = scanner.nextInt();
-
-            double[][] biasBuffer = new double[n][m];
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    double x = scanner.nextDouble();
-                    biasBuffer[i][j] = x;
-                }
-            }
-
-            biases[l] = Matrix.copyOf(biasBuffer);
+        for (int l = 0; l < layers + 1; l++) {
+            biases[l] = Matrix.readMatrix(scanner);
         }
 
+        scanner.close();
     }
 
     /* INITIALIZATION */
@@ -127,7 +103,7 @@ public class NeuralNetwork {
     }
 
     /**/
-    public double[][] feedForward(final double[] input) {
+    public double[] feedForward(final double[] input) {
         double[][] currentInput = Matrix.toColumnMatrix(input);
 
         int loops = brain.length;
@@ -142,9 +118,14 @@ public class NeuralNetwork {
             currentInput = Matrix.map(currentInput, activationFunction::fun);
         }
 
-        return currentInput;
+        return Matrix.toVector(currentInput);
     }
 
+    /** Backpropagation.
+     * The formula is as follows: DeltaBias = learningRate * (currentError * derr(output))^ * tr(input)
+     *                            DeltaWeights = DeltaBias * tr(input)
+     * The ^ means element wise multiplication
+     * */
     public void backPropagation(double[] initialInput, double[] target) {
         int layers = brain.length + 1;
 
@@ -156,7 +137,6 @@ public class NeuralNetwork {
         double[][][] errors = getErrors(Matrix.subtract(matrixTarget, inputs[layers - 1]));
 
         for (int i = layers - 1; i >= 1; i--) {
-            /* DeltaWeight ~= learningRate * (currentError * derr(currentRawOutput)) * tr(input) */
             double[][] rawOutput = rawInputs[i];
             double[][] inputTransposed = Matrix.transpose(inputs[i - 1]);;
             double[][] error = errors[i];
@@ -165,7 +145,7 @@ public class NeuralNetwork {
             double[][] gradients = Matrix.map(rawOutput, activationFunction::slope);
             double[][] deltaWeights = Matrix.hadamardProduct(error, gradients);
 
-            deltaWeights = Matrix.map(deltaWeights, (x) -> x * LEARNING_RATE);
+            deltaWeights = Matrix.map(deltaWeights, (x) -> x * learningRate);
 
             double[][] deltaBiases = Matrix.copyOf(deltaWeights);
 
@@ -259,46 +239,52 @@ public class NeuralNetwork {
         System.out.println(Color.GREEN_BOLD + "---=== Neural Network Biases ===---" + Color.RESET);
 
         for (int i = 0; i < n; i++) {
-            System.out.printf("Layer: %d\n", i + 1);
+            System.out.printf("Layer: %d\n", i);
             Matrix.print(biases[i]);
         }
 
         System.out.println("");
     }
 
+    /** Exports the neural network data into a file.
+     * This is useful after training the neural network. */
     public void export() {
         Path path = Paths.get(EXPORT_FILE);
+        Path pathReadable = Paths.get("snapshot_readable.txt");
 
         try {
+            FileWriter fileReadableWriter = new FileWriter(pathReadable.toFile());
             FileWriter fileWriter = new FileWriter(path.toFile());
 
             int len = brain.length;
+
+            fileReadableWriter.write(String.format("Layers              : %d \n", len));
+            fileReadableWriter.write(String.format("Activation Function : %s \n", activationFunction.getName()));
+            fileReadableWriter.write(String.format("Weights Init        : %s \n", weightsInit.getName()));
+            fileReadableWriter.write(String.format("Bias Init           : %s \n", biasInit.getName()));
+            fileReadableWriter.write("\n");
+            fileReadableWriter.write("---=== Neural Network Weights ===---\n\n");
+
             fileWriter.write(len + "\n");
 
-            for (double[][] matrix : brain) {
-                fileWriter.write(matrix.length + " " + matrix[0].length + "\n");
+            for (int l = 0; l < len; l++) {
+                fileReadableWriter.write("Layer " + l + "\n");
 
-                for (double[] line : matrix) {
-                    for (double x : line) {
-                        fileWriter.write(x + " ");
-                    }
-                    fileWriter.write("\n");
-                }
+                Matrix.printToFile(fileWriter, brain[l]);
+                Matrix.printToFile(fileReadableWriter, brain[l]);
             }
 
-            fileWriter.write("\n");
+            fileReadableWriter.write("---=== Neural Network Biases ===---\n\n");
 
-            fileWriter.write(biases.length + "\n");
-            for (double[][] bias : biases) {
-                fileWriter.write(bias.length + " " + bias[0].length + "\n");
+            for (int l = 0; l < len + 1; l++) {
+                fileReadableWriter.write("Layer " + l + "\n");
 
-                for (double[] line : bias) {
-                    for (double x : line) {
-                        fileWriter.write(x + " ");
-                    }
-                    fileWriter.write("\n");
-                }
+                Matrix.printToFile(fileWriter, biases[l]);
+                Matrix.printToFile(fileReadableWriter, biases[l]);
             }
+
+            fileReadableWriter.flush();
+            fileReadableWriter.close();
 
             fileWriter.flush();
             fileWriter.close();
@@ -307,4 +293,20 @@ public class NeuralNetwork {
         }
     }
 
+    /** Having a training set, it shows the predictions of the neural network */
+    public void showPredictions(TrainingData trainingData) {
+        trainingData.loop((input, target) -> {
+            double[] output = feedForward(input);
+
+            System.out.println("Output:");
+            Matrix.print(output);
+            System.out.println("Expected:");
+            Matrix.print(Matrix.toColumnMatrix(target));
+            System.out.println("\n");
+        });
+    }
+
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
+    }
 }

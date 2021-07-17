@@ -1,6 +1,11 @@
 package neural_network.activation;
 
-public class TanhFunction implements ActivationFunction {
+public class TanhFunction extends ActivationFunction {
+
+    public TanhFunction() {
+        super(ActivationFunctions.TANH_FUNCTION);
+    }
+
     @Override
     public double fun(double x) {
         return Math.tanh(x);

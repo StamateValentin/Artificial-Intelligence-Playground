@@ -1,7 +1,6 @@
 import neural_network.NeuralNetwork;
 import neural_network.activation.SigmoidFunction;
 import neural_network.bias.RandomBias;
-import neural_network.matrix.Matrix;
 import neural_network.training.TrainingData;
 import neural_network.weights.RandomWeightsInit;
 
@@ -18,29 +17,19 @@ public class MainClass {
         trainingData.add(new double[]{1, 1}, new double[]{0});
 
         neuralNetwork = new NeuralNetwork(
-                new int[]{2, 2, 1},
+                new int[]{2, 8, 1},
                 new SigmoidFunction(),
                 new RandomWeightsInit(),
                 new RandomBias()
         );
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 2000; i++) {
             neuralNetwork.train(trainingData);
         }
 
         neuralNetwork.export();
 
-        double[][] output = neuralNetwork.feedForward(new double[]{0, 0});
-        Matrix.println(output);
-
-        output = neuralNetwork.feedForward(new double[]{1, 0});
-        Matrix.println(output);
-
-        output = neuralNetwork.feedForward(new double[]{0, 1});
-        Matrix.println(output);
-
-        output = neuralNetwork.feedForward(new double[]{1, 1});
-        Matrix.println(output);
+        neuralNetwork.showPredictions(trainingData);
 
     }
 

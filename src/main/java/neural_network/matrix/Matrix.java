@@ -1,6 +1,9 @@
 package neural_network.matrix;
 
 import neural_network.color.Color;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Matrix {
 
@@ -133,6 +136,10 @@ public class Matrix {
         return difference;
     }
 
+    public static void print(double[] V) {
+        print(toColumnMatrix(V));
+    }
+
     public static void print(double[][] A) {
         System.out.print(Color.BLUE_BOLD);
         for (int i = 0; i < A.length; i++) {
@@ -223,5 +230,55 @@ public class Matrix {
         for (double[][] error : matrixList) {
             println(error);
         }
+    }
+
+    public static double[] toVector(double[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+
+        if (n != 1 && m != 1) {
+            System.out.println("Invalid row or column matrix");
+            return new double[1];
+        }
+
+        double[] vector = new double[Math.max(n, m)];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                vector[n * i + j] = matrix[i][j];
+            }
+        }
+
+        return vector;
+    }
+
+    public static void printToFile(FileWriter fileWriter, double[][] matrix) throws IOException {
+        fileWriter.write(matrix.length + " " + matrix[0].length + "\n");
+
+        for (double[] line : matrix) {
+            for (double x : line) {
+                fileWriter.write(x + " ");
+            }
+            fileWriter.write("\n");
+        }
+
+        fileWriter.write("\n");
+        fileWriter.flush();
+    }
+
+    public static double[][] readMatrix(Scanner scanner) {
+        int n = scanner.nextInt();
+        int m = scanner.nextInt();
+
+        double[][] matrixBuffer = new double[n][m];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                double x = scanner.nextDouble();
+                matrixBuffer[i][j] = x;
+            }
+        }
+
+        return matrixBuffer;
     }
 }

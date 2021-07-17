@@ -1,6 +1,7 @@
 /.gradle
 /.build
 /.idea
-*.jar
 /build/
-/snapshot.txt
+/out/
+*.jar
+*.txt
