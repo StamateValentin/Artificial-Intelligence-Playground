@@ -8,6 +8,4 @@
 * [Shuffling a Vector](https://stackoverflow.com/questions/1519736/random-shuffling-of-an-array)
 * [Activation Functions](https://towardsdatascience.com/activation-functions-neural-networks-1cbd9f8d91d6)
 * [Perceptron](https://youtu.be/ntKn5TPHHAk)
-
-
-
+* [Gradient Descend](https://youtu.be/jc2IthslyzM)

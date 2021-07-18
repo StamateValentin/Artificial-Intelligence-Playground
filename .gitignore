@@ -2,6 +2,7 @@
 /.build
 /.idea
 /build/
-/out/
+out/
 *.jar
 *.txt
+META-INF/

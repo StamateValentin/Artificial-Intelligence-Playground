@@ -1,6 +1,7 @@
 import neural_network.NeuralNetwork;
 import neural_network.activation.SigmoidFunction;
 import neural_network.bias.RandomBias;
+import neural_network.cost.SimpleCost;
 import neural_network.training.TrainingData;
 import neural_network.weights.RandomWeightsInit;
 import processing.core.PApplet;
@@ -11,7 +12,8 @@ public class MainProcessing extends PApplet {
             new int[]{2, 4, 4, 1},
             new SigmoidFunction(),
             new RandomWeightsInit(),
-            new RandomBias()
+            new RandomBias(),
+            new SimpleCost()
     );
 
     public void settings() {

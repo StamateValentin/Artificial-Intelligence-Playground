@@ -1,6 +1,7 @@
 import neural_network.NeuralNetwork;
 import neural_network.activation.SigmoidFunction;
 import neural_network.bias.RandomBias;
+import neural_network.cost.SimpleCost;
 import neural_network.training.TrainingData;
 import neural_network.weights.RandomWeightsInit;
 
@@ -20,7 +21,8 @@ public class MainClass {
                 new int[]{2, 8, 1},
                 new SigmoidFunction(),
                 new RandomWeightsInit(),
-                new RandomBias()
+                new RandomBias(),
+                new SimpleCost()
         );
 
         for (int i = 0; i < 2000; i++) {

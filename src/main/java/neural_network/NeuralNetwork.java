@@ -4,6 +4,8 @@ import neural_network.bias.BiasInit;
 import neural_network.bias.RandomBias;
 import neural_network.color.Color;
 import neural_network.activation.TanhFunction;
+import neural_network.cost.CostFunction;
+import neural_network.cost.SimpleCost;
 import neural_network.training.TrainingData;
 import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
@@ -26,12 +28,14 @@ public class NeuralNetwork {
     private final ActivationFunction activationFunction;
     private final WeightsInit weightsInit;
     private final BiasInit biasInit;
+    private final CostFunction costFunction;
 
     /** Get the layer sizes and initializes the rest of the element with their default values */
     public NeuralNetwork(int[] layerDimension) {
         this.activationFunction = new TanhFunction();
         this.weightsInit = new RandomWeightsInit();
         this.biasInit = new RandomBias();
+        this.costFunction = new SimpleCost();
 
         int len = layerDimension.length;
 
@@ -42,10 +46,11 @@ public class NeuralNetwork {
         initBrain(layerDimension);
     }
 
-    public NeuralNetwork(int[] layerDimension, ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit) {
+    public NeuralNetwork(int[] layerDimension, ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit, CostFunction costFunction) {
         this.activationFunction = activationFunction;
         this.weightsInit = weightsInit;
         this.biasInit = biasInit;
+        this.costFunction = costFunction;
 
         int len = layerDimension.length;
 
@@ -58,10 +63,11 @@ public class NeuralNetwork {
 
     /** Initializes the neural network with the given parameters and import the
      * weights and biases from the exported file */
-    public NeuralNetwork(ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit) throws FileNotFoundException {
+    public NeuralNetwork(ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit, CostFunction costFunction) throws FileNotFoundException {
         this.activationFunction = activationFunction;
         this.weightsInit = weightsInit;
         this.biasInit = biasInit;
+        this.costFunction = costFunction;
 
         Path path = Paths.get(EXPORT_FILE);
 
@@ -134,7 +140,7 @@ public class NeuralNetwork {
 
         double[][][] rawInputs = getRawInputs(matrixInput);
         double[][][] inputs = getInputs(matrixInput);
-        double[][][] errors = getErrors(Matrix.subtract(matrixTarget, inputs[layers - 1]));
+        double[][][] errors = getErrors(costFunction.cost(matrixTarget, inputs[layers - 1]));
 
         for (int i = layers - 1; i >= 1; i--) {
             double[][] rawOutput = rawInputs[i];
@@ -262,6 +268,7 @@ public class NeuralNetwork {
             fileReadableWriter.write(String.format("Activation Function : %s \n", activationFunction.getName()));
             fileReadableWriter.write(String.format("Weights Init        : %s \n", weightsInit.getName()));
             fileReadableWriter.write(String.format("Bias Init           : %s \n", biasInit.getName()));
+            fileReadableWriter.write(String.format("Cost Function       : %s \n", costFunction.getName()));
             fileReadableWriter.write("\n");
             fileReadableWriter.write("---=== Neural Network Weights ===---\n\n");
 
