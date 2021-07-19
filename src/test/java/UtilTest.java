@@ -1,6 +1,6 @@
 import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
-import neural_network.matrix.Matrix;
+import neural_network.math.Matrix;
 import neural_network.util.Util;
 import org.junit.jupiter.api.Test;
 

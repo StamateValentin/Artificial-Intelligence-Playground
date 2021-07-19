@@ -1,6 +1,6 @@
 import neural_network.activation.ActivationFunction;
 import neural_network.activation.SigmoidFunction;
-import neural_network.matrix.Matrix;
+import neural_network.math.Matrix;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

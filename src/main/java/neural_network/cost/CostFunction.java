@@ -16,11 +16,11 @@ public abstract class CostFunction {
         int mO = output[0].length;
 
         int nT = target.length;
-        int mT = target.length;
+        int mT = target[0].length;
 
         if (nO != nT || mO != mT) {
-            System.out.println("Cost: Invalid Matrix Size");
-            return new double[1][1];
+            System.out.printf("Cost: Invalid Matrix size -> %dx%d vs %dx%d%n\n", nO, mO, nT, mT);
+            return null;
         }
 
         double[][] matrix = new double[nO][mO];

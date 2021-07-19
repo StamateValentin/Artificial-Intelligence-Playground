@@ -1,4 +1,4 @@
-package neural_network.matrix;
+package neural_network.math;
 
 import neural_network.color.Color;
 import java.io.FileWriter;
@@ -51,7 +51,7 @@ public class Matrix {
 
         if (mA != nB) {
             System.out.println("Dot Product: Invalid matrix size.");
-            return create(1, 1);
+            return null;
         }
 
         double[][] output = new double[nA][mB];
@@ -76,7 +76,7 @@ public class Matrix {
 
         if (nA != nB || mA != mB) {
             System.out.println("Hadamard Product: Invalid matrix size");
-            return create(1, 1);
+            return null;
         }
 
         double[][] product = new double[nA][mA];
@@ -99,7 +99,7 @@ public class Matrix {
 
         if (nA != nB || mA != mB) {
             System.out.println("Add: Invalid matrix size");
-            return create(1, 1);
+            return null;
         }
 
         double[][] sum = new double[nA][mA];
@@ -122,7 +122,7 @@ public class Matrix {
 
         if (nA != nB || mA != mB) {
             System.out.println("Subtract: Invalid matrix size");
-            return create(1, 1);
+            return null;
         }
 
         double[][] difference = new double[nA][mA];
@@ -238,14 +238,15 @@ public class Matrix {
 
         if (n != 1 && m != 1) {
             System.out.println("Invalid row or column matrix");
-            return new double[1];
+            return null;
         }
 
         double[] vector = new double[Math.max(n, m)];
 
+        int l = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                vector[n * i + j] = matrix[i][j];
+                vector[l++] = matrix[i][j];
             }
         }
 

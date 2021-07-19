@@ -1,6 +1,6 @@
 package neural_network.weights;
 
-import neural_network.matrix.Matrix;
+import neural_network.math.Matrix;
 import static neural_network.util.Util.generateRandom;
 
 public class XavierWeightsInit extends WeightsInit {

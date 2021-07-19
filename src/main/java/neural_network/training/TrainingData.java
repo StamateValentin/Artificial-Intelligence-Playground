@@ -1,6 +1,6 @@
 package neural_network.training;
 
-import neural_network.matrix.Matrix;
+import neural_network.math.Matrix;
 import neural_network.util.Util;
 import java.util.ArrayList;
 import java.util.List;

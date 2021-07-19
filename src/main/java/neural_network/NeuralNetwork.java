@@ -1,21 +1,27 @@
 package neural_network;
 
+import neural_network.activation.ActivationFunction;
+import neural_network.activation.TanhFunction;
 import neural_network.bias.BiasInit;
 import neural_network.bias.RandomBias;
 import neural_network.color.Color;
-import neural_network.activation.TanhFunction;
 import neural_network.cost.CostFunction;
 import neural_network.cost.SimpleCost;
+import neural_network.loss.LossFunction;
+import neural_network.loss.MeanSquaredError;
+import neural_network.math.Matrix;
+import neural_network.math.Vector;
 import neural_network.training.TrainingData;
-import neural_network.weights.WeightsInit;
 import neural_network.weights.RandomWeightsInit;
-import neural_network.matrix.Matrix;
-import neural_network.activation.ActivationFunction;
+import neural_network.weights.WeightsInit;
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class NeuralNetwork {
@@ -24,11 +30,13 @@ public class NeuralNetwork {
 
     private final double[][][] brain;
     private final double[][][] biases;
+    private double loss = Integer.MAX_VALUE;
 
     private final ActivationFunction activationFunction;
     private final WeightsInit weightsInit;
     private final BiasInit biasInit;
     private final CostFunction costFunction;
+    private final LossFunction lossFunction;
 
     /** Get the layer sizes and initializes the rest of the element with their default values */
     public NeuralNetwork(int[] layerDimension) {
@@ -36,6 +44,7 @@ public class NeuralNetwork {
         this.weightsInit = new RandomWeightsInit();
         this.biasInit = new RandomBias();
         this.costFunction = new SimpleCost();
+        this.lossFunction = new MeanSquaredError();
 
         int len = layerDimension.length;
 
@@ -51,6 +60,7 @@ public class NeuralNetwork {
         this.weightsInit = weightsInit;
         this.biasInit = biasInit;
         this.costFunction = costFunction;
+        this.lossFunction = new MeanSquaredError();
 
         int len = layerDimension.length;
 
@@ -68,6 +78,7 @@ public class NeuralNetwork {
         this.weightsInit = weightsInit;
         this.biasInit = biasInit;
         this.costFunction = costFunction;
+        this.lossFunction = new MeanSquaredError();
 
         Path path = Paths.get(EXPORT_FILE);
 
@@ -138,6 +149,7 @@ public class NeuralNetwork {
         double[][] matrixInput = Matrix.toColumnMatrix(initialInput);
         double[][] matrixTarget = Matrix.toColumnMatrix(target);
 
+
         double[][][] rawInputs = getRawInputs(matrixInput);
         double[][][] inputs = getInputs(matrixInput);
         double[][][] errors = getErrors(costFunction.cost(matrixTarget, inputs[layers - 1]));
@@ -164,7 +176,42 @@ public class NeuralNetwork {
     }
 
     public void train(TrainingData trainingData) {
-        trainingData.randomLoop(this::backPropagation);
+        List<Double> errorData = new ArrayList<>();
+
+        trainingData.randomLoop(((input, target) -> {
+            double[] output = feedForward(input);
+
+            double[] errors = Vector.map(Vector.difference(target, output), x -> x * x);
+            double error = Vector.mean(errors);
+
+            errorData.add(error);
+
+            backPropagation(input, target);
+        }));
+
+        loss = lossFunction.calculate(errorData);
+    }
+
+    public void trainWithDelay(TrainingData trainingData, int delay) {
+        List<Double> errorData = new ArrayList<>();
+
+        trainingData.randomLoop(((input, target) -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            double[] output = feedForward(input);
+
+            double[] errors = Vector.map(Vector.difference(target, output), x -> x * x);
+            double error = Vector.mean(errors);
+
+            errorData.add(error);
+
+            backPropagation(input, target);
+        }));
+
+        loss = lossFunction.calculate(errorData);
     }
 
     private double[][][] getInputs(double[][] input) {
@@ -269,6 +316,7 @@ public class NeuralNetwork {
             fileReadableWriter.write(String.format("Weights Init        : %s \n", weightsInit.getName()));
             fileReadableWriter.write(String.format("Bias Init           : %s \n", biasInit.getName()));
             fileReadableWriter.write(String.format("Cost Function       : %s \n", costFunction.getName()));
+            fileReadableWriter.write(String.format("Loss Function       : %s \n", lossFunction.getName()));
             fileReadableWriter.write("\n");
             fileReadableWriter.write("---=== Neural Network Weights ===---\n\n");
 
@@ -315,5 +363,13 @@ public class NeuralNetwork {
 
     public void setLearningRate(double learningRate) {
         this.learningRate = learningRate;
+    }
+
+    public double getLearningRate() {
+        return learningRate;
+    }
+
+    public double getLoss() {
+        return loss;
     }
 }

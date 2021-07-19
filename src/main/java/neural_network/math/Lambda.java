@@ -1,4 +1,4 @@
-package neural_network.matrix;
+package neural_network.math;
 
 @FunctionalInterface
 public interface Lambda {
