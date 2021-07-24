@@ -1,37 +1,21 @@
-import neural_network.NeuralNetwork;
-import neural_network.activation.SigmoidFunction;
-import neural_network.bias.RandomBias;
-import neural_network.cost.SimpleCost;
-import neural_network.training.TrainingData;
-import neural_network.weights.RandomWeightsInit;
+import mnist.Image;
+import mnist.MnistDecompressedReader;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 public class MainClass {
 
-    public static void main(String... args) {
+    public static void main(String... args) throws IOException {
 
-        NeuralNetwork neuralNetwork;
+        MnistDecompressedReader mnistReader = new MnistDecompressedReader();
+        mnistReader.readDecompressedTraining(Paths.get("./data"), mnistEntry -> {
+            int label = mnistEntry.getLabel();
+            BufferedImage image = mnistEntry.createImage();
 
-        TrainingData trainingData = new TrainingData();
-        trainingData.add(new double[]{0, 0}, new double[]{0});
-        trainingData.add(new double[]{1, 0}, new double[]{1});
-        trainingData.add(new double[]{0, 1}, new double[]{1});
-        trainingData.add(new double[]{1, 1}, new double[]{0});
-
-        neuralNetwork = new NeuralNetwork(
-                new int[]{2, 8, 1},
-                new SigmoidFunction(),
-                new RandomWeightsInit(),
-                new RandomBias(),
-                new SimpleCost()
-        );
-
-        for (int i = 0; i < 2000; i++) {
-            neuralNetwork.train(trainingData);
-        }
-
-        neuralNetwork.export();
-
-        neuralNetwork.showPredictions(trainingData);
+            Image img = new Image(image, label);
+        });
 
     }
 

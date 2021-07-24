@@ -1,5 +1,11 @@
 # AI Playground
 
+## Problems Solved
+ * [XOR Problem](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.1)
+ * [Point Categorizer](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.2)
+ * [Handwritten Digits](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.3)
+
+
 ## Resources
 * [Make Your Own Neural Network](https://github.com/ProWhalen/AndrewNg-ML/blob/master/Make%20Your%20Own%20Neural%20Network.pdf)
 * [The Coding Train : Neural Network Playlist](https://youtube.com/playlist?list=PLRqwX-V7Uu6aCibgK1PTWWu9by6XFdCfh)

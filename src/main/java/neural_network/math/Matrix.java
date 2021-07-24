@@ -232,16 +232,23 @@ public class Matrix {
         }
     }
 
-    public static double[] toVector(double[][] matrix) {
+    public static double[] lineMatrixToVector(double[][] matrix) {
         int n = matrix.length;
         int m = matrix[0].length;
 
         if (n != 1 && m != 1) {
-            System.out.println("Invalid row or column matrix");
+            System.out.println("To Vector: Invalid row or column matrix");
             return null;
         }
 
-        double[] vector = new double[Math.max(n, m)];
+        return matrixToVector(matrix);
+    }
+
+    public static double[] matrixToVector(double[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+
+        double[] vector = new double[n * m];
 
         int l = 0;
         for (int i = 0; i < n; i++) {

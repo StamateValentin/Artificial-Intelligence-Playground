@@ -1,6 +1,7 @@
 public class Color {
     public static final Color GREEN = new Color(65, 209, 103);
     public static final Color RED = new Color(255, 82, 82);
+    public static final Color BLACK = new Color(0, 0, 0);
 
     public final int r, g, b;
 

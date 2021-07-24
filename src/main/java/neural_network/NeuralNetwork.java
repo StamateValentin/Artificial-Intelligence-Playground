@@ -135,7 +135,7 @@ public class NeuralNetwork {
             currentInput = Matrix.map(currentInput, activationFunction::fun);
         }
 
-        return Matrix.toVector(currentInput);
+        return Matrix.lineMatrixToVector(currentInput);
     }
 
     /** Backpropagation.
