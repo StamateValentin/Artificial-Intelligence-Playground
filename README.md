@@ -2,7 +2,7 @@
 
 ## Problems Solved
  * [XOR Problem](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.1)
- * [Point Categorizer](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.2)
+ * [Categorizing Points](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.2)
  * [Handwritten Digits](https://github.com/StamateValentin/Artificial-Intelligence-Playground/releases/tag/0.3)
 
 

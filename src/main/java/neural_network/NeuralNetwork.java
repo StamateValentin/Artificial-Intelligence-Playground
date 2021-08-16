@@ -71,6 +71,37 @@ public class NeuralNetwork {
         initBrain(layerDimension);
     }
 
+    public NeuralNetwork(double[][][] brain, int[] layerDimension) {
+        this.brain = brain;
+        this.activationFunction = new TanhFunction();
+        this.weightsInit = new RandomWeightsInit();
+        this.biasInit = new RandomBias();
+        this.costFunction = new SimpleCost();
+        this.lossFunction = new MeanSquaredError();
+
+        int len = layerDimension.length;
+
+        this.biases = new double[len][][];
+
+        initBias(layerDimension);
+    }
+
+    public NeuralNetwork(double[][][] brain, int[] layerDimension, ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit, CostFunction costFunction) {
+        this.brain = brain;
+
+        this.activationFunction = activationFunction;
+        this.weightsInit = weightsInit;
+        this.biasInit = biasInit;
+        this.costFunction = costFunction;
+        this.lossFunction = new MeanSquaredError();
+
+        int len = layerDimension.length;
+
+        this.biases = new double[len][][];
+
+        initBias(layerDimension);
+    }
+
     /** Initializes the neural network with the given parameters and import the
      * weights and biases from the exported file */
     public NeuralNetwork(ActivationFunction activationFunction, WeightsInit weightsInit, BiasInit biasInit, CostFunction costFunction) throws FileNotFoundException {
@@ -273,6 +304,10 @@ public class NeuralNetwork {
     }
 
     /* GETTERS AND SETTERS */
+    public double[][][] getBrainReference() {
+        return brain;
+    }
+
     public void printBrain() {
         int n = brain.length;
 

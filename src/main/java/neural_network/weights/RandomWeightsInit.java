@@ -11,6 +11,6 @@ public class RandomWeightsInit extends WeightsInit {
 
     @Override
     public double[][] create(int n, int m) {
-        return Matrix.map(Matrix.create(n, m), (x) -> generateRandom(-1.0, 1.0));
+        return Matrix.map(Matrix.create(n, m), (x) -> generateRandom(-0.99, 0.99));
     }
 }
